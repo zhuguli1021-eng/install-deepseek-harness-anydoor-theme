@@ -1,0 +1,4 @@
+interface:
+  display_name: "DeepSeek Harness 任意门主题"
+  short_description: "一键安装、验证或恢复 DeepSeek Harness 卜卜任意门主题"
+  default_prompt: "Use $install-deepseek-harness-anydoor-theme to install and verify the 任意门卜卜 theme for my local DeepSeek Harness."
