@@ -1,0 +1,27 @@
+{
+  "name": "dsh-theme-anydoor",
+  "version": "1.1.0",
+  "description": "任意门主题：DSH Web 品牌区（侧边栏卜卜 / 品牌名 / 首屏五卜卜 / 彩色文件夹 / 工作卜卜）的 cordis client 插件",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./lib/client.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib",
+    "assets",
+    "README.md"
+  ],
+  "license": "MIT",
+  "dsh": {
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-conversation",
+        "@deepseek-ai/dsh-client-ui-sidebar"
+      ]
+    }
+  }
+}

@@ -4,40 +4,45 @@
 
 - Package: `@deepseek-ai/dsh`
 - Version: `0.1.1-rc.2`
-- Expected launch profile: `dsh web`
-- Expected local URL: `http://127.0.0.1:3080/`
+- Profile: `web`
+- URL: `http://127.0.0.1:3080/`
+- Theme plugin: `dsh-theme-anydoor 1.1.0`
 
-The JavaScript client bundles are version-locked. Refuse installation when the detected version differs because minified module structure and CSS class names may have changed.
+The plugin uses public brand slots but its CSS still references built class names from this Harness version. Refuse installation on a different version until those selectors have been checked.
 
-## Changed frontend modules
+## Architecture
 
-- `dsh-client-ui-conversation/lib/client.js`: five bus-window Bobu characters, two-line slogan, white hero background, responsive bus/exhaust/ground scene.
-- `dsh-client-ui-workspace/lib/client.js`: five-color workspace mark.
-- `dsh-client-ui-model-selection/lib/client.js`: working orange Bobu pet beside the model selector.
-- `dsh-client-ui-sidebar/lib/client.js`: orange Bobu brand icon and `任意门` wordmark.
+The current release is a standalone Cordis client plugin. It does not replace the official conversation, workspace, model-selection, or sidebar modules.
 
-## Installed assets
+Installation adds:
 
-- `dsh-brand-bobu.png`
-- `dsh-bus-exhaust.png`
-- `dsh-five-bobu.png`
-- `dsh-ground-line.png`
-- `dsh-route-left.png`
-- `dsh-working-orange-bobu.png`
+- `~/.dsh/profiles/web/packages/dsh-theme-anydoor/`: durable package source.
+- `~/.dsh/profiles/web/node_modules/dsh-theme-anydoor/`: loader-resolvable runtime copy.
+- A file dependency in the Web profile `package.json`.
+- An idempotent loader entry in `cordis.patch.yml`.
+- `dsh-*.png` images in the active Web frontend asset directory.
+
+The three `single` brand slots use `priority: -1`; the official brand remains at priority `0`, and the lowest value renders. This prevents the duplicate-priority loader failure.
+
+Harness exposes the resolved dark palette through `body[data-ds-dark-theme]`. The plugin uses that marker rather than only `prefers-color-scheme`, so explicit light/dark choices and “follow system” all update correctly.
 
 ## Visual acceptance
 
-- The expanded sidebar shows one orange Bobu plus `任意门`; the collapsed rail shows only the Bobu.
-- The hero row matches the bus-window identities in yellow, pink, orange, green, and blue order.
-- The slogan reads `每个夢都像任意門` and `往不同世界 有你的世界 有趣不只一點！` on two lines.
-- The bus remains fully visible in the lower-right and smaller than the composer.
-- The hand-drawn ground line connects the left flowers to the bus; exhaust remains attached to the rear.
-- The page background remains white and does not obstruct the composer.
+- Expanded and collapsed sidebar states show the correct 任意门 branding.
+- Five hero Bobu characters retain yellow, pink, orange, green, blue order.
+- The two-line slogan remains readable in both palettes.
+- The composer is warm white with dark text in light mode.
+- The composer is dark translucent with light text in dark mode.
+- The bus stays in the lower-right; the ground scene remains visible.
+- Workspace marks and the model-selection Bobu render without layout shift.
+- Browser console contains no warning or error from `dsh-theme-anydoor`.
+- `cordis.patch.yml` contains only one `dsh-theme-anydoor` loader row.
 
 ## Failure handling
 
-- If no installation is found, request an explicit `--root` only after checking the printed candidates.
-- If the version differs, do not install. Rebuild the four patched clients against that version first.
-- If `node --check` fails, do not modify live files.
-- If installation succeeds but the page is stale, restart `dsh web` and hard-refresh the browser.
-- Use `restore` when the theme causes a regression; do not manually delete the npx cache.
+- Run `status` before installation or repair.
+- Stop on a Harness version mismatch.
+- Never expose credentials from `~/.dsh` while inspecting the profile.
+- If JavaScript validation or post-install verification fails, let the installer restore its new backup automatically.
+- If the browser is stale after a successful update, restart `dsh web` and hard-refresh once.
+- Use `restore` rather than deleting the npx cache or the whole DSH profile.
